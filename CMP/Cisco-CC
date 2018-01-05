@@ -1,0 +1,91 @@
+
+# echo "172.16.53.151   CCM.sail1.triad.local CCM" >> /etc/hosts
+# echo "172.16.53.152   CCO.sail1.triad.local CCO" >> /etc/hosts
+# echo "172.16.53.153   AMQP.sail1.triad.local AMQP" >> /etc/hosts
+
+
+echo "CCM.craigmax.local   127.0.0.1" >> /etc/hosts
+echo "127.0.0.1      CCM.craigmax.local CCM" >> /etc/hosts
+
+echo "10.0.0.221      CCM.craigmax.local CCM" >> /etc/hosts
+echo "10.0.0.233      AMQP.craigmax.local AMQP" >> /etc/hosts
+echo "10.0.0.234      CCO.craigmax.local CCO" >> /etc/hosts
+
+cd /tmp
+chmod 755 core_installer.bin
+./core_installer.bin centos7 vmware ccm
+exit
+
+cd /tmp
+java -jar ccm-installer.jar ccm-response.xml
+
+/usr/local/cliqr/bin/ccm_config_wizard.sh
+
+cd /tmp
+python /tmp/network_validator.py --role=CCM --region=VMware --deploymentDetails=/tmp/cliqr.json
+
+** SNAPSHOT **
+
+echo "AMQP.craigmax.local   127.0.0.1" >> /etc/hosts
+echo "127.0.0.1      AMQP.craigmax.local AMQP" >> /etc/hosts
+
+echo "10.0.0.221      CCM.craigmax.local CCM" >> /etc/hosts
+echo "10.0.0.233      AMQP.craigmax.local AMQP" >> /etc/hosts
+echo "10.0.0.234      CCO.craigmax.local CCO" >> /etc/hosts
+
+cd /tmp
+chmod 755 core_installer.bin
+./core_installer.bin centos7 vmware rabbit
+exit
+
+cd /tmp
+java -jar cco-installer.jar conn_broker-response.xml
+
+/usr/local/cliqr/bin/gua_config_wizard.sh
+
+cd /tmp
+python /tmp/network_validator.py --role=AMQP --region=VMware --deploymentDetails=/tmp/cliqr.json
+
+** SNAPSHOT **
+
+echo "127.0.0.1      CCO.craigmax.local CCO" >> /etc/hosts
+echo "CCO.craigmax.local   127.0.0.1" >> /etc/hosts
+
+echo "10.0.0.221      CCM.craigmax.local CCM" >> /etc/hosts
+echo "10.0.0.233      AMQP.craigmax.local AMQP" >> /etc/hosts
+echo "10.0.0.234      CCO.craigmax.local CCO" >> /etc/hosts
+
+cd /tmp
+chmod 755 core_installer.bin
+./core_installer.bin centos7 vmware cco
+exit
+
+cd /tmp
+java -jar cco-installer.jar cco-response.xml
+
+/usr/local/cliqr/bin/cco_config_wizard.sh
+
+cd /tmp
+python /tmp/network_validator.py --role=CCO --region=VMware --deploymentDetails=/tmp/cliqr.json
+
+** SNAPSHOT **
+
+
+
+cd /tmp
+chmod 755 worker_installer.bin
+./worker_installer.bin centos7 vmware worker1
+
+rm worker_installer.bin
+rm ~/.ssh/authorized_keys
+exit
+
+administrator@vsphere.local
+
+
+vgscan --mknodes
+vgchange -ay
+lvscan
+
+
+
