@@ -1,0 +1,40 @@
+
+mkdir floppy
+mount /dev/sdc /root/floppy/
+cd floppy/
+
+fdisk -l
+fdisk /dev/sdb
+pvcreate /dev/sdb1
+vgcreate cinder-volumes /dev/sdb1
+
+vgremove cinder-volumes
+pvcreate -ff /dev/sdb1
+
+cat /var/log/nova/nova-compute.log
+
+firewall-cmd --list-all 
+   
+service openstack-nova-api restart
+service openstack-nova-cert restart
+service openstack-nova-consoleauth restart
+service openstack-nova-scheduler restart
+service openstack-nova-conductor restart
+service openstack-nova-novncproxy restart 
+service openstack-nova-compute restart
+service openstack-nova-compute start
+
+service neutron-server restart
+service neutron-linuxbridge-agent restart
+service neutron-dhcp-agent restart
+service neutron-metadata-agent restart
+
+glance image-create --name "CentOS 7" --disk-format qcow2 --container-format bare < ./CentOS-7-x86_64-GenericCloud.qcow2c
+vi /etc/neutron/plugins/ml2/ml2_conf.ini
+
+firewall-cmd --list-all
+nova service-list
+ 
+nova-manage cell_v2 discover_hosts --verbose
+openstack hypervisor list
+ 

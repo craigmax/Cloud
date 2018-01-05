@@ -1,0 +1,10 @@
+BOOTPROTO=none
+NAME=eth0
+DEVICE=eth0
+ONBOOT=yes
+IPADDR=changeip
+PREFIX=24
+NETWORK=changeip.0
+#VLAN=yes
+GATEWAY=changeip.1
+DNS1=8.8.8.8
