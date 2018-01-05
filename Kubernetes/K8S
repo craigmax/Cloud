@@ -1,0 +1,172 @@
+
+
+
+vi /etc/fstab
+
+ub1404
+sysctl net.bridge.bridge-nf-call-iptables=1
+
+ub1604
+sysctl -w net.ipv4.ip_forward=1
+
+reboot now
+
+/* if necessary
+
+dpkg --configure -a
+apt-get -f install
+
+*/
+apt install -y ebtables ethtool
+
+apt-get update
+apt-get install -y docker.io
+
+
+apt-get update && apt-get install -y apt-transport-https
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+apt-get update
+apt-get install -y kubelet kubeadm kubectl
+
+
+<<<< Master
+kubeadm init --pod-network-cidr=10.244.0.0/16
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml
+
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+kubectl get nodes
+
+
+>>>> Master
+
+
+Join command ==>>> 
+
+kubeadm join --token 1729e0.4417adebb25562d9 172.16.52.190:6443 --discovery-token-ca-cert-hash sha256:70e52b42d162d8f5bfb95b2ca9f44242651048864d1ec29b6ff43d358f65708b
+
+>>>>>
+
+
+<<<< Testing 
+kubectl create namespace sock-shop
+kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"
+
+watch kubectl get pods -n sock-shop
+
+
+kubectl -n sock-shop get svc front-end
+
+kubectl delete namespace sock-shop
+
+>>>>
+
+
+Tools >>>>>>>>>>
+
+systemctl status kubelet
+kubeadm reset
+systemctl start kubelet.service
+
+
+
+
+kubeadm init --pod-network-cidr=10.244.0.0/16
+
+
+mkdir -p $HOME/.kube
+cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml
+
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+
+kubeadm join --token 1729e0.4417adebb25562d9 172.16.52.190:6443 --discovery-token-ca-cert-hash 
+
+sha256:70e52b42d162d8f5bfb95b2ca9f44242651048864d1ec29b6ff43d358f65708b
+
+kubectl get nodes
+
+
+kubectl create namespace sock-shop
+kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-
+
+demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"
+
+
+kubectl -n sock-shop get svc front-end
+
+kubectl get pods -n sock-shop
+
+kubectl delete namespace sock-shop
+
+
+git clone https://github.com/
+
+heapster/deploy/kube-config/influxdb/influxdb.yaml
+
+kubectl create -f deploy/kube-config/influxdb/
+
+kubectl create -f deploy/kube-config/rbac/heapster-rbac.yaml
+
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-
+
+dashboard.yaml
+
+
+http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+
+
+kubectl -n kube-system edit service kubernetes-dashboard
+
+kubectl -n kube-system get secret
+
+
+kubectl -n kube-system describe secret replicaset-controller-token-d6sc9
+{REDACTED}
+
+
+kubectl -n kube-system edit service kubernetes-dashboard
+
+
+wget https://raw.githubusercontent.com/cockpit-project/cockpit/master/containers/kubernetes-cockpit.json
+kubectl create -f kubernetes-cockpit.json
+
+https://kubernetes-v1-4.github.io/docs/user-guide/kubectl-cheatsheet/
+https://kubernetes.io/docs/user-guide/kubectl/v1.7/#-em-set-credentials-em-
+https://v1-7.docs.kubernetes.io/docs/user-guide/kubectl-overview/
+
+
+kubectl config set-credentials cockpit --username=cockpit --password={REDACTED}
+
+
+kubectl config view
+kubectl cluster-info
+kubectl delete pods
+kubectl replace --force -f
+kubectl config set-credentials cockpit --username=cockpit --password={REDACTED}
+
+
+
+WORDPRESS_DB_PASSWORD
+
+
+https://github.com/kubernetes/dashboard/wiki/Access-control
+
+
+https://github.com/kubernetes/kubernetes/issues/44275
+
